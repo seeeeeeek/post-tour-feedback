@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Seek Tours — Feedback Admin</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink: #1a1a1a;
+  --paper: #faf8f3;
+  --cream: #f0ece0;
+  --gold: #c9a84c;
+  --sage: #5c7a5e;
+  --muted: #7a7469;
+  --border: #d4cfc4;
+  --card: #ffffff;
+  --shadow: 0 2px 20px rgba(0,0,0,0.07);
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'DM Sans', sans-serif; background: var(--paper); color: var(--ink); min-height: 100vh; }
+
+header {
+  background: var(--ink); color: white;
+  padding: 24px 40px; display: flex; align-items: center; gap: 16px;
+}
+.logo-ring {
+  width: 40px; height: 40px; border: 1.5px solid var(--gold); border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Playfair Display', serif; font-size: 16px; color: var(--gold);
+  flex-shrink: 0;
+}
+header h1 { font-family: 'Playfair Display', serif; font-size: 18px; font-weight: 400; }
+header p { font-size: 12px; color: #888; margin-top: 2px; }
+.badge {
+  margin-left: auto; background: var(--gold); color: var(--ink);
+  font-size: 10px; font-weight: 500; padding: 4px 10px; border-radius: 100px;
+  letter-spacing: 0.06em; text-transform: uppercase;
+}
+
+main { max-width: 720px; margin: 48px auto; padding: 0 24px 80px; }
+
+.card {
+  background: var(--card); border-radius: 16px; padding: 36px;
+  box-shadow: var(--shadow); margin-bottom: 24px;
+}
+
+.card-label { font-size: 11px; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase; color: var(--gold); margin-bottom: 6px; }
+.card-title { font-family: 'Playfair Display', serif; font-size: 20px; font-weight: 400; margin-bottom: 24px; }
+
+/* SCRIPT URL input */
+.url-field { margin-bottom: 20px; }
+.url-field label { display: block; font-size: 13px; font-weight: 500; margin-bottom: 8px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; }
+.url-field input {
+  width: 100%; padding: 12px 16px;
+  border: 1px solid var(--border); border-radius: 10px;
+  font-family: 'DM Sans', sans-serif; font-size: 13px; color: var(--ink);
+  background: var(--paper); transition: border-color 0.2s;
+}
+.url-field input:focus { outline: none; border-color: var(--gold); background: white; }
+
+/* DROPDOWN */
+.select-wrap { position: relative; margin-bottom: 16px; }
+.select-wrap select {
+  width: 100%; padding: 14px 44px 14px 16px;
+  border: 1.5px solid var(--border); border-radius: 12px;
+  font-family: 'DM Sans', sans-serif; font-size: 15px; color: var(--ink);
+  background: var(--paper); appearance: none; cursor: pointer;
+  transition: border-color 0.2s;
+}
+.select-wrap select:focus { outline: none; border-color: var(--gold); background: white; }
+.select-wrap::after {
+  content: '▾'; position: absolute; right: 16px; top: 50%;
+  transform: translateY(-50%); color: var(--muted); pointer-events: none; font-size: 14px;
+}
+
+.load-btn, .gen-btn {
+  padding: 12px 24px; border: none; border-radius: 10px;
+  font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 500;
+  cursor: pointer; transition: all 0.2s;
+}
+.load-btn { background: var(--cream); color: var(--ink); }
+.load-btn:hover { background: var(--border); }
+.gen-btn { background: var(--ink); color: white; width: 100%; font-size: 15px; padding: 14px; margin-top: 4px; }
+.gen-btn:hover { background: #2d2d2d; }
+.gen-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+/* CLIENT INFO */
+.client-info {
+  background: var(--cream); border-radius: 12px; padding: 20px;
+  margin-bottom: 20px; display: none;
+}
+.client-info.visible { display: block; }
+.client-info .ci-name { font-family: 'Playfair Display', serif; font-size: 18px; margin-bottom: 8px; }
+.client-info .ci-meta { font-size: 13px; color: var(--muted); display: flex; gap: 16px; flex-wrap: wrap; }
+.client-info .ci-guides { margin-top: 12px; display: flex; gap: 8px; flex-wrap: wrap; }
+.guide-pill {
+  background: white; border: 1px solid var(--border); border-radius: 100px;
+  padding: 4px 12px; font-size: 12px; display: flex; align-items: center; gap: 6px;
+}
+.guide-pill .dot { width: 6px; height: 6px; background: var(--sage); border-radius: 50%; }
+
+/* LINK OUTPUT */
+.link-box {
+  background: var(--ink); border-radius: 12px; padding: 20px 24px;
+  display: none; margin-top: 20px;
+}
+.link-box.visible { display: block; }
+.link-box .lb-label { font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: #888; margin-bottom: 10px; }
+.link-box .lb-url {
+  font-family: monospace; font-size: 13px; color: var(--gold-lt, #e8d5a0);
+  word-break: break-all; margin-bottom: 16px; line-height: 1.6;
+}
+.copy-btn {
+  background: var(--gold); color: var(--ink); border: none;
+  padding: 10px 20px; border-radius: 8px; font-size: 13px; font-weight: 500;
+  cursor: pointer; transition: all 0.15s; font-family: 'DM Sans', sans-serif;
+}
+.copy-btn:hover { background: #b8932e; }
+.copy-btn.done { background: var(--sage); color: white; }
+
+/* STATUS */
+.status { font-size: 13px; color: var(--muted); margin-top: 12px; }
+.status.loading::after { content: ''; display: inline-block; width: 10px; height: 10px; border: 2px solid var(--border); border-top-color: var(--gold); border-radius: 50%; margin-left: 8px; animation: spin 0.6s linear infinite; vertical-align: middle; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* RECENT LIST */
+.recent-item {
+  display: flex; align-items: center; gap: 16px;
+  padding: 14px 0; border-bottom: 1px solid var(--border);
+}
+.recent-item:last-child { border-bottom: none; }
+.ri-name { flex: 1; font-weight: 500; font-size: 15px; }
+.ri-meta { font-size: 12px; color: var(--muted); }
+.ri-copy { background: transparent; border: 1px solid var(--border); border-radius: 8px; padding: 6px 14px; font-size: 12px; cursor: pointer; transition: all 0.15s; font-family: 'DM Sans', sans-serif; }
+.ri-copy:hover { border-color: var(--gold); color: var(--gold); }
+.ri-copy.done { border-color: var(--sage); color: var(--sage); }
+
+@media (max-width: 600px) {
+  header { padding: 16px 20px; }
+  main { margin: 24px auto; }
+  .card { padding: 24px; }
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo-ring">S</div>
+  <div>
+    <h1>Feedback Admin</h1>
+    <p>Generate personalised feedback links for completed tours</p>
+  </div>
+  <span class="badge">Internal</span>
+</header>
+
+<main>
+
+  <!-- STEP 1: Config -->
+  <div class="card">
+    <div class="card-label">Setup</div>
+    <div class="card-title">Apps Script URL</div>
+    <div class="url-field">
+      <label>Paste your deployed Web App URL here</label>
+      <input type="text" id="scriptUrl" placeholder="https://script.google.com/macros/s/YOUR_ID/exec" oninput="saveUrl()">
+    </div>
+    <button class="load-btn" onclick="loadClients()">Load Completed Clients</button>
+    <div class="status" id="loadStatus"></div>
+  </div>
+
+  <!-- STEP 2: Generate link -->
+  <div class="card" id="generateCard" style="display:none">
+    <div class="card-label">Generate Link</div>
+    <div class="card-title">Pilih nama klien</div>
+
+    <div class="select-wrap">
+      <select id="clientSelect" onchange="onClientSelect()">
+        <option value="">— Pilih klien —</option>
+      </select>
+    </div>
+
+    <div class="client-info" id="clientInfo">
+      <div class="ci-name" id="ciName"></div>
+      <div class="ci-meta">
+        <span id="ciDates"></span>
+        <span id="ciCities"></span>
+      </div>
+      <div class="ci-guides" id="ciGuides"></div>
+    </div>
+
+    <button class="gen-btn" id="genBtn" onclick="generateLink()" disabled>Generate Feedback Link</button>
+
+    <div class="link-box" id="linkBox">
+      <div class="lb-label">Feedback link — kirim ke klien via WhatsApp</div>
+      <div class="lb-url" id="linkUrl"></div>
+      <button class="copy-btn" id="copyBtn" onclick="copyLink()">Copy Link</button>
+    </div>
+  </div>
+
+  <!-- STEP 3: Recent links -->
+  <div class="card" id="recentCard" style="display:none">
+    <div class="card-label">Semua Klien</div>
+    <div class="card-title">Daftar klien yang sudah selesai</div>
+    <div id="recentList"></div>
+  </div>
+
+</main>
+
+<script>
+const FEEDBACK_BASE = "seektours.co/feedback"; // ← will redirect to your Apps Script URL
+let clients = [];
+let currentClient = null;
+
+// Persist script URL
+window.addEventListener("load", () => {
+  const saved = localStorage.getItem("seekScriptUrl") || "";
+  if (saved) document.getElementById("scriptUrl").value = saved;
+});
+
+function saveUrl() {
+  localStorage.setItem("seekScriptUrl", document.getElementById("scriptUrl").value.trim());
+}
+
+function getScriptUrl() {
+  return document.getElementById("scriptUrl").value.trim();
+}
+
+async function loadClients() {
+  const url = getScriptUrl();
+  if (!url) { alert("Masukkan Apps Script URL terlebih dahulu."); return; }
+
+  const status = document.getElementById("loadStatus");
+  status.textContent = "Memuat data klien";
+  status.className = "status loading";
+
+  try {
+    const res = await fetch(url + "?action=getClients");
+    clients = await res.json();
+
+    const select = document.getElementById("clientSelect");
+    select.innerHTML = '<option value="">— Pilih klien —</option>';
+    clients.forEach(c => {
+      select.innerHTML += `<option value="${c.name}">${c.name} — ${c.lastDate}</option>`;
+    });
+
+    document.getElementById("generateCard").style.display = "block";
+    document.getElementById("recentCard").style.display = "block";
+    renderRecentList();
+
+    status.textContent = `${clients.length} klien ditemukan`;
+    status.className = "status";
+  } catch(err) {
+    status.textContent = "Gagal memuat. Periksa URL dan coba lagi.";
+    status.className = "status";
+    console.error(err);
+  }
+}
+
+function onClientSelect() {
+  const name = document.getElementById("clientSelect").value;
+  currentClient = clients.find(c => c.name === name) || null;
+
+  const info = document.getElementById("clientInfo");
+  const genBtn = document.getElementById("genBtn");
+  const linkBox = document.getElementById("linkBox");
+
+  if (!currentClient) {
+    info.classList.remove("visible");
+    genBtn.disabled = true;
+    linkBox.classList.remove("visible");
+    return;
+  }
+
+  // Populate info card
+  document.getElementById("ciName").textContent = currentClient.name;
+  document.getElementById("ciDates").textContent = currentClient.startDate + " – " + currentClient.lastDate;
+  const cities = [...new Set(currentClient.guides.map(g => g.city))];
+  document.getElementById("ciCities").textContent = cities.join(", ");
+
+  const guidesEl = document.getElementById("ciGuides");
+  guidesEl.innerHTML = "";
+  currentClient.guides.forEach(g => {
+    guidesEl.innerHTML += `<div class="guide-pill"><span class="dot"></span>${g.guide} · ${g.city}</div>`;
+  });
+
+  info.classList.add("visible");
+  genBtn.disabled = false;
+  linkBox.classList.remove("visible");
+}
+
+function generateLink() {
+  if (!currentClient) return;
+
+  const slug = currentClient.name.replace(/\s+/g, "");
+  const scriptUrl = getScriptUrl();
+  const formUrl = scriptUrl + "?client=" + encodeURIComponent(currentClient.name);
+
+  // The pretty link (after Namecheap redirect is set up)
+  const prettyLink = "https://seektours.co/feedback" + slug;
+
+  document.getElementById("linkUrl").textContent = prettyLink;
+  document.getElementById("linkBox").classList.add("visible");
+
+  // Store actual URL for copying (pretty link once redirect is live)
+  window._currentLink = prettyLink;
+  window._currentLinkFallback = formUrl;
+}
+
+function copyLink() {
+  const link = window._currentLink || "";
+  navigator.clipboard.writeText(link).then(() => {
+    const btn = document.getElementById("copyBtn");
+    btn.textContent = "✓ Copied!";
+    btn.classList.add("done");
+    setTimeout(() => { btn.textContent = "Copy Link"; btn.classList.remove("done"); }, 2000);
+  });
+}
+
+function renderRecentList() {
+  const list = document.getElementById("recentList");
+  list.innerHTML = "";
+  clients.slice(0, 20).forEach(c => {
+    const slug = c.name.replace(/\s+/g, "");
+    const link = "https://seektours.co/feedback" + slug;
+    list.innerHTML += `
+      <div class="recent-item">
+        <div>
+          <div class="ri-name">${c.name}</div>
+          <div class="ri-meta">${c.startDate} – ${c.lastDate} · ${c.guides.length} pemandu</div>
+        </div>
+        <button class="ri-copy" onclick="copyQuick(this, '${link}')">Copy</button>
+      </div>`;
+  });
+}
+
+function copyQuick(btn, link) {
+  navigator.clipboard.writeText(link).then(() => {
+    btn.textContent = "✓";
+    btn.classList.add("done");
+    setTimeout(() => { btn.textContent = "Copy"; btn.classList.remove("done"); }, 2000);
+  });
+}
+</script>
+</body>
+</html>
